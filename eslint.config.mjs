@@ -60,6 +60,21 @@ const eslintConfig = [
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
+  {
+    // CommonJS scripts (server.js, etc.) -- treat as CJS so `require`,
+    // `module`, `exports`, and `__dirname` resolve as Node globals.
+    files: ["server.js", "**/*.cjs"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: {
+        require: "readonly",
+        module: "readonly",
+        exports: "writable",
+        __dirname: "readonly",
+        __filename: "readonly",
+      },
+    },
+  },
 ];
 
 export default eslintConfig;
