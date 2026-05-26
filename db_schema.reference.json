@@ -1,0 +1,297 @@
+{
+  "build_id": "51",
+  "plan_hash_note": "Read-only reference. Translate this into Drizzle code in lib/db/schema.ts.",
+  "tables": [
+    {
+      "name": "user",
+      "purpose": "Better Auth user table (scaffold-managed); referenced here for FK clarity",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary_key",
+            "not_null"
+          ]
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "constraints": [
+            "not_null",
+            "unique"
+          ]
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "constraints": []
+        },
+        {
+          "name": "emailVerified",
+          "type": "boolean",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "false"
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "now()"
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "now()"
+        }
+      ]
+    },
+    {
+      "name": "session",
+      "purpose": "Better Auth session table (scaffold-managed)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary_key",
+            "not_null"
+          ]
+        },
+        {
+          "name": "userId",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ],
+          "references": "user.id",
+          "on_delete": "cascade"
+        },
+        {
+          "name": "token",
+          "type": "text",
+          "constraints": [
+            "not_null",
+            "unique"
+          ]
+        },
+        {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ]
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "now()"
+        }
+      ]
+    },
+    {
+      "name": "account",
+      "purpose": "Better Auth credential storage (scaffold-managed)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary_key",
+            "not_null"
+          ]
+        },
+        {
+          "name": "userId",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ],
+          "references": "user.id",
+          "on_delete": "cascade"
+        },
+        {
+          "name": "providerId",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ]
+        },
+        {
+          "name": "accountId",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ]
+        },
+        {
+          "name": "password",
+          "type": "text",
+          "constraints": []
+        }
+      ]
+    },
+    {
+      "name": "verification",
+      "purpose": "Better Auth verification tokens (scaffold-managed)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary_key",
+            "not_null"
+          ]
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ]
+        },
+        {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "application_stage",
+      "purpose": "Postgres enum for pipeline stages",
+      "kind": "enum",
+      "values": [
+        "saved",
+        "applied",
+        "interviewing",
+        "offer",
+        "rejected"
+      ]
+    },
+    {
+      "name": "applications",
+      "purpose": "One row per job application owned by exactly one user",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraints": [
+            "primary_key",
+            "not_null"
+          ],
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "userId",
+          "type": "text",
+          "constraints": [
+            "not_null"
+          ],
+          "references": "user.id",
+          "on_delete": "cascade"
+        },
+        {
+          "name": "company",
+          "type": "text",
+          "constraints": [
+            "not_null",
+            "check (length(company) between 1 and 200)"
+          ]
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "constraints": [
+            "not_null",
+            "check (length(role) between 1 and 200)"
+          ]
+        },
+        {
+          "name": "url",
+          "type": "text",
+          "constraints": [
+            "check (url is null or length(url) <= 2048)"
+          ]
+        },
+        {
+          "name": "dateApplied",
+          "type": "date",
+          "constraints": [
+            "not_null"
+          ]
+        },
+        {
+          "name": "stage",
+          "type": "application_stage",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "'saved'"
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "constraints": []
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "now()"
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not_null"
+          ],
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "applications_user_idx",
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "applications_user_stage_idx",
+          "columns": [
+            "userId",
+            "stage"
+          ]
+        },
+        {
+          "name": "applications_user_date_idx",
+          "columns": [
+            "userId",
+            "dateApplied"
+          ]
+        }
+      ]
+    }
+  ]
+}
