@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1779784538306,
+      "tag": "0000_jobtrail_applications",
+      "breakpoints": true
+    }
+  ]
+}
