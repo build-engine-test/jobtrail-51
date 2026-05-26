@@ -1,4 +1,4 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "./index";
 import { applications, type Application } from "./schema";
 import {
@@ -65,4 +65,23 @@ export async function getStageCounts(userId: string): Promise<StageCounts> {
     }
   }
   return counts;
+}
+
+/**
+ * Fetch a single application by id, but only if it belongs to the given
+ * user. Returns `null` when no row matches — this collapses the
+ * "doesn't exist" and "exists but owned by someone else" cases into a
+ * single response, so callers can map either to a 404 without leaking
+ * information about other users' rows.
+ */
+export async function getApplicationByIdForUser(
+  id: string,
+  userId: string,
+): Promise<Application | null> {
+  const rows = await db
+    .select()
+    .from(applications)
+    .where(and(eq(applications.id, id), eq(applications.userId, userId)))
+    .limit(1);
+  return rows[0] ?? null;
 }
