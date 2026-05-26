@@ -37,7 +37,12 @@ export const session = pgTable("session", {
     .references(() => user.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
   expiresAt: timestamp("expiresAt", { withTimezone: false }).notNull(),
+  ipAddress: text("ipAddress"),
+  userAgent: text("userAgent"),
   createdAt: timestamp("createdAt", { withTimezone: false })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updatedAt", { withTimezone: false })
     .notNull()
     .defaultNow(),
 });
@@ -49,7 +54,23 @@ export const account = pgTable("account", {
     .references(() => user.id, { onDelete: "cascade" }),
   providerId: text("providerId").notNull(),
   accountId: text("accountId").notNull(),
+  accessToken: text("accessToken"),
+  refreshToken: text("refreshToken"),
+  idToken: text("idToken"),
+  accessTokenExpiresAt: timestamp("accessTokenExpiresAt", {
+    withTimezone: false,
+  }),
+  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", {
+    withTimezone: false,
+  }),
+  scope: text("scope"),
   password: text("password"),
+  createdAt: timestamp("createdAt", { withTimezone: false })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updatedAt", { withTimezone: false })
+    .notNull()
+    .defaultNow(),
 });
 
 export const verification = pgTable("verification", {
@@ -57,6 +78,12 @@ export const verification = pgTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expiresAt", { withTimezone: false }).notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: false })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updatedAt", { withTimezone: false })
+    .notNull()
+    .defaultNow(),
 });
 
 /**
